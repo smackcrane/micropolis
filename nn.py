@@ -51,11 +51,16 @@ class Linear(Module):
         self.bias = rng.normal(size=(out_dim)) if bias else None
 
     def __call__(self, x):
-        out = x @ self.weight + self.bias
+        out = x @ self.weight
+        if self.bias is not None:
+            out += self.bias
         return out
 
     def parameters(self):
-        return [self.weight, self.bias]
+        if self.bias is not None:
+            return [self.weight, self.bias]
+        else:
+            return [self.weight]
 
     def __repr__(self):
         s = f"Linear: weight {self.weight.shape}"
