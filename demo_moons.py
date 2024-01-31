@@ -20,13 +20,13 @@ X, y = make_moons(n_samples=n_samples, noise=noise)
 print('done', flush=True)
 
 # initalize model
-model = nn.Sequential([
+model = nn.Sequential(
     nn.Linear(2, 10),
     nn.ReLU(),
     nn.Linear(10,10),
     nn.ReLU(),
     nn.Linear(10,2),
-])
+)
 print()
 print(model)
 print()
@@ -56,7 +56,7 @@ def plot_decision_boundary(X, y, model, ax, mesh_size=0.025, title=''):
 epochs = 2_000
 sample_nll = 1e5 # negative log likelihood
 lr = 1e-1 # learning rate
-T = 3e0 # temperature
+T = 3e0 / n_samples # temperature
 optimizer = optim.MH(model, lr=lr, T=T)
 verbose = True
 train_accepted = []
@@ -69,7 +69,8 @@ best_model = model.copy()
 for epoch in range(epochs):
 
     # step optimizer
-    accept, proposal_nll, ratio, p = optimizer.step(X, y)
+    stats = optimizer.step(X, y)
+    accept, proposal_nll, ratio = stats['accept'], stats['proposal_nll'], stats['ratio']
 
     # record and print stats
     if accept:
@@ -79,7 +80,7 @@ for epoch in range(epochs):
     train_proposal_nll.append(proposal_nll)
     if verbose:
         outcome = 'Accept' if accept else 'Reject'
-        print(f'\rEp {epoch+1:6d}/{epochs}  {outcome}    sample: {sample_nll:3.3f}  proposal: {proposal_nll:3.3f}    {ratio=:.2f}  {p=:.2f}    {lr=:.1e}    '[:100], end='')
+        print(f'\rEp {epoch+1:6d}/{epochs}  {outcome}    sample: {sample_nll:3.3f}  proposal: {proposal_nll:3.3f}    {ratio=:.2f}                           '[:100], end='')
     # record best model
     if sample_nll < best_nll:
         best_nll = sample_nll
@@ -102,7 +103,7 @@ ax3.plot(train_proposal_nll, label='proposal', c='orange')
 ax3.plot(train_sample_nll, label='sample', c='blue')
 ax3.set_title(f'Sample and Proposal Loss')
 ax3.set_ylabel(f'negative log likelihood, {T=:.1e}')
-ax3.set_ylim(0,10)
+ax3.set_ylim(0,50/n_samples)
 ax3.legend()
 plt.tight_layout()
 plt.show()

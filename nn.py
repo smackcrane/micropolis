@@ -23,7 +23,7 @@ class Module:
 class Sequential(Module):
     """Sequential network"""
 
-    def __init__(self, layers=[]):
+    def __init__(self, *layers):
         self.layers = layers
 
     def __call__(self, x):
@@ -38,8 +38,8 @@ class Sequential(Module):
         return [p for layer in self.layers for p in layer.parameters()]
 
     def __repr__(self):
-        s = 'Sequential model\n  '
-        s += '\n  '.join([str(layer) for layer in self.layers])
+        s = 'Sequential model\n'
+        s += '\n'.join(['  ' + str(layer) for layer in self.layers])
         s += f'\ntotal parameters: {np.sum([np.prod(p.shape) for p in self.parameters()]):,}'
         return s
 
@@ -47,8 +47,8 @@ class Linear(Module):
     """Linear layer"""
 
     def __init__(self, in_dim, out_dim, bias=True):
-        self.weight = rng.normal(size=(in_dim, out_dim))
-        self.bias = rng.normal(size=(out_dim)) if bias else None
+        self.weight = rng.normal(size=(in_dim, out_dim)) / np.sqrt(in_dim)
+        self.bias = rng.normal(size=(out_dim)) / np.sqrt(in_dim) if bias else None
 
     def __call__(self, x):
         out = x @ self.weight
