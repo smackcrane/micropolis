@@ -71,7 +71,7 @@ class MMH:
             assert T > 0, f'test="{test}" requires T > 0, got {T=}'
             self.step = self._exact_step
             # load X_correction distribution
-            xcorr = np.genfromtxt('norm2log4000_20_1.0.txt') # stored as density
+            xcorr = np.genfromtxt('data/norm2log4000_20_1.0.txt') # stored as density
             xcorr[:,1] = np.cumsum(xcorr[:,1]) # convert to cdf
             xcorr[:,1] = xcorr[:,1] / xcorr[-1,1] # make total probability equal to 1
             self.X_correction_cdf = xcorr
