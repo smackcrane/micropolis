@@ -148,22 +148,19 @@ class MMH:
         proposal = self.propose()
 
         # loop to enlarge minibatch until variance condition is satisfied
-        X_batch = np.empty(shape=(0, *X.shape[1:])) # container for samples
-        y_batch = np.empty(shape=(0, *y.shape[1:]), dtype=np.intc) # container for labels
         batch_total = 0
-        logratio_batch = np.empty(shape=(0,)) # container for individual log ratios
+        logratio_batch = np.empty(shape=(0,)) # container for log ratios
         sample_variance = 1e5
         target_variance = 1 # this is fixed to match the pre-computed X_correction distribution
         while sample_variance > target_variance:
 
             # enlarge minibatch
+            # NB. we make no effort to avoid duplicates---they should be rare enough to have no effect for small batch sizes
             batch_total += batch_size
             X_new, y_new = self.draw_minibatch(X, y, batch_size)
-            X_batch = np.concatenate((X_batch, X_new), axis=0)
-            y_batch = np.concatenate((y_batch, y_new), axis=0)
 
-            # compute log ratios and append to list
-            logratios = self.compute_logratio(proposal, X_batch, y_batch, reduction='none')
+            # compute log ratios for new samples and append to list
+            logratios = self.compute_logratio(proposal, X_new, y_new, reduction='none')
             logratios /= self.T
             logratio_batch = np.concatenate((logratio_batch, logratios))
 
