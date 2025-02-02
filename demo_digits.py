@@ -34,7 +34,7 @@ except FileNotFoundError: # if not saved, download it
     data_url = optical_recognition_of_handwritten_digits.metadata['data_url']
 
 X = X.to_numpy()
-y = y.to_numpy(dtype=np.intc)
+y = y.to_numpy(dtype=np.intc).squeeze() # in download case, y has an extra dimension of size 1
 
 test_size=0.3
 Xy_splits = train_test_split(X, y, test_size=test_size, stratify=y)
