@@ -1,2 +1,6 @@
 
 optical_recognition_of_handwritten_digits.csv
+
+venv/
+__pycache__/
+.envrc
